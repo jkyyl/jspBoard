@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="board">
+  
+  <select id="getBoardList" resultType="BoardVo">
+  	select * from jsp_board order by id
+  </select>
+  
+  <select id="selectActiveBoard" resultType="BoardVo">
+  	select * from jsp_board where active='Y' order by id
+  </select>
+  
+  <insert id="createNewBoard" parameterType="BoardVo">
+  	insert into jsp_board (id, name, active, writer, reg_dt)
+  			values(seq_no.NEXTVAL, #{name}, #{active}, #{writer}, SYSDATE)
+  </insert>
+  
+  <update id="activateBoard" parameterType="int">
+  	update jsp_board set active =
+  	case
+  		when active = 'Y'
+  			then 'N'
+  		else 'Y'
+  	end 
+   	where id = #{boardId}
+  </update>
+  
+  <update id="updateBoard" parameterType="BoardVo">
+  	update jsp_board set name=#{name}, active=#{active}, writer=#{writer}, reg_dt=SYSDATE
+ 	where id=#{id}
+  </update>
+  	
+  </mapper>

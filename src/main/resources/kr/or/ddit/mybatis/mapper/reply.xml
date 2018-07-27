@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="reply">
+
+  <select id="getReplyListByContent" resultType="ReplyVo" parameterType="int">
+	select * from jsp_board_reply where cnt_no=#{cnt_no}
+  </select>
+
+  <insert id="createReply" parameterType="ReplyVo">
+  	insert into jsp_board_reply (id, cnt_no, content, active, std_id, reg_dt)
+  			values(#{id}, #{cnt_no}, #{content}, 'Y', #{std_id}, SYSDATE)
+  </insert>
+  
+  <select id="getNextSeq" resultType="int">
+  	select seq_no.nextval from dual
+  </select>
+  
+  <update id="disableReply" parameterType="int">
+  	update jsp_board_reply set active =
+  	case
+  		when active = 'Y'
+  			then 'N'
+  	end 
+   	where id = #{id}
+  </update>  
+
+</mapper>

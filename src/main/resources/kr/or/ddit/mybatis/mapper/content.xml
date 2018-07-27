@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+  <mapper namespace="content">
+  
+  <select id="selectAllContent" resultType="ContentVo">
+  	select * from jsp_board_content order by no desc
+  </select>
+  
+  <select id="getContentPageList" resultType="ContentVo" parameterType="map">
+  	select * from 
+  		(select a.*, ROWNUM rn from
+  			(select no, board_id, (lpad('->',(level-1)*2,'-')||title) as title, content, writer, regdt, active, gno, pno, std_id, viewcnt
+  			 from jsp_board_content where board_id=#{board_id}      
+  			 START WITH pno IS null 
+		     CONNECT BY PRIOR no=pno
+		     ORDER SIBLINGS BY regdt desc)
+  		a) 
+  	where rn between (#{page}-1) * #{pageSize} + 1 and #{page} * #{pageSize}
+  </select>
+  
+  <select id="countAllContent" resultType="int">
+  	select count(*) from jsp_board_content
+  </select>
+  
+  <select id="countContentByBoard" resultType="int" parameterType="int">
+  	select count(*) from jsp_board_content
+  	where board_id = #{board_id}
+  </select>
+  
+  <insert id="createContent" parameterType="ContentVo">
+  	insert into jsp_board_content (no, board_id, title, content, writer, regdt, active, gno, pno, std_id, viewcnt)
+  			values(#{no}, #{board_id}, #{title}, #{content}, #{writer}, SYSDATE, 'Y', #{gno}, <choose><when test="pno == 0">null</when><otherwise>#{pno}</otherwise></choose>, #{id}, 0)
+  </insert>
+  
+  <select id="getLastGno" resultType="int">
+	select gno from 
+		(select a.*, ROWNUM rn from
+	    	(select gno from jsp_board_content 
+	  		 where gno = (select max(gno) as gno from jsp_board_content)
+	    )a
+	) where rn = 1
+  </select>
+  
+  <select id="getNextSeq" resultType="int">
+  	select seq_no.nextval from dual
+  </select>
+  
+  <select id="getContentByNo" resultType="ContentVo" parameterType="int">
+  	select * from jsp_board_content
+  	where no=#{no} order by no desc
+  </select>
+
+  <update id="disableContent" parameterType="int">
+  	update jsp_board_content set active =
+  	case
+  		when active = 'Y'
+  			then 'N'
+  	end 
+   	where no = #{no}
+  </update>  
+  
+  <update id="updateContent" parameterType="ContentVo">
+  	update jsp_board_content set board_id=#{board_id}, title=#{title}, content=#{content}, writer=#{writer}, 
+  		regdt=SYSDATE, gno=#{gno}, pno=<choose><when test="pno == 0">null</when><otherwise>#{pno}</otherwise></choose>, std_id=#{id}
+  		where no=#{no}
+  </update>
+  
+  </mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="attachment">
+  
+  <select id="getAttachmentList" resultType="AttachmentVo" parameterType="int">
+  		select * from attachments 
+  			where content_no=#{content_no} 
+  			order by id desc
+  </select>
+  
+  <insert id="uploadFile" parameterType="AttachmentVo">
+  	insert into attachments(id, content_no, up_name, fpath, fname)
+  			values(seq_no.NEXTVAL, #{content_no}, #{up_name}, #{fpath}, #{fname})
+  </insert>
+  
+</mapper>
