@@ -14,6 +14,7 @@ public interface BoardServiceInf {
 	 * @return
 	 * Method 설명 : 모든 게시판을 가져온다.
 	 */
+	
 	List<BoardVo> getBoardList();
 
 	/**
